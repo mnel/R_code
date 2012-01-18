@@ -37,10 +37,12 @@ rnorm(5)
 
 
 We can also produce plots:
+
 ```
 library(ggplot2)
 qplot(hp, mpg, data = mtcars) + geom_smooth()
 ```
+
 ![plot of chunk md-cars-scatter](https://github.com/mnel/R_code/tree/master/examples/md-cars-scatter.png)
 
 
