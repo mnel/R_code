@@ -1,7 +1,6 @@
-
 This is a miminal example of using **knitr** with in HTML pages. I am actually using markdown here since it is more convenient in GitHub.
 
-First, the input file was named as `knitr-minimal_knit_.md` ([click to view its source](https://github.com/mnel/tree/master/R_code/examples/knitr-minimal_knit_.md)), which contains `_knit_` so that **knitr** will automatically determine the output filename to be `knitr-minimal.md`. 
+First, the input file was named as `knitr-minimal_knit_.md` ([click to view its source](https://github.com/mnel/R_code/master/examples/knitr-minimal_knit_.md)), which contains `_knit_` so that **knitr** will automatically determine the output filename to be `knitr-minimal.md`. 
 
 Note we may need to set up a few options before knitting this file, e.g. I used the code below to make sure **knitr** uses the correct hooks to wrap my output, and writes correct URL's for my images.
 
