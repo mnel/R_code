@@ -30,16 +30,6 @@ rnorm(5)
 
 
 
-We can also produce plots:
-
-{% highlight r %}
-library(ggplot2)
-qplot(hp, mpg, data = mtcars) + geom_smooth()
-{% endhighlight %}
-![plot of chunk md-cars-scatter](https://github.com/mnel/R_code/tree/master/examples/md-cars-scatter.png)
-
-
-So no more hesitation on using GitHub and **knitr**! You just write a minimal amount of code to get beautiful output on the web.
 
 
 
