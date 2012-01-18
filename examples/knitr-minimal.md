@@ -4,29 +4,28 @@ First, the input file was named as `knitr-minimal_knit_.md` ([click to view its 
 
 Note we may need to set up a few options before knitting this file, e.g. I used the code below to make sure **knitr** uses the correct hooks to wrap my output, and writes correct URL's for my images.
 
-{% highlight r %}
+```
 opts_knit$set(out.format = "gfm", base.url = "https://github.com/mnel/tree/master/R_code/examples/")
-{% endhighlight %}
+```
 
 
 
 Now we write some code chunks in this markdown file:
-
-{% highlight r %}
+```
 ## a simple calculator
 1 + 1
-{% endhighlight %}
-{% highlight text %}
+```
+```
 ## [1] 2
-{% endhighlight %}
-{% highlight r %}
+```
+```
 ## boring random numbers
 set.seed(123)
 rnorm(5)
-{% endhighlight %}
-{% highlight text %}
+```
+```
 ## [1] -0.56048 -0.23018  1.55871  0.07051  0.12929
-{% endhighlight %}
+{```
 
 
 
