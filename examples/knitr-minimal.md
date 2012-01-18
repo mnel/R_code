@@ -11,18 +11,22 @@ opts_knit$set(out.format = "gfm", base.url = "https://github.com/mnel/tree/maste
 
 
 Now we write some code chunks in this markdown file:
+
 ```
 ## a simple calculator
 1 + 1
 ```
+
 ```
 ## [1] 2
 ```
+
 ```
 ## boring random numbers
 set.seed(123)
 rnorm(5)
 ```
+
 ```
 ## [1] -0.56048 -0.23018  1.55871  0.07051  0.12929
 ```
