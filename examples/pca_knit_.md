@@ -93,7 +93,7 @@ end.rcode-->
 From this plot it looks as if an initial guess of phi = 300, nugget = 0.5, sigmasq = 1 could be reasonable
 
 <!--begin.rcode 
-reml_model <- likfit(pca_geodata, trend =  ~ PC1 + PC2 + PC4 + PC5, lik.method = 'REML', ini.cov.pars = c(1,300), nugget = 0.5 )
+reml_model <- likfit(pca_geodata, trend =  ~ PC1 + PC2 + PC4 + PC5, lik.method = 'REML', ini.cov.pars = c(1,300), nugget = 0.5, message = F )
 ## summarize (this is a bit ugly, but will work)
 cov_pars <- reml_model$cov.pars
 nugget <- reml_model$nugget
@@ -125,7 +125,7 @@ end.rcode-->
 If we drop PC1
 
 <!--begin.rcode 
-reml_model_245 <- likfit(pca_geodata, trend =  ~  PC2 + PC4 + PC5, lik.method = 'REML', ini.cov.pars = c(1,300), nugget = 0.5 )
+reml_model_245 <- likfit(pca_geodata, trend =  ~  PC2 + PC4 + PC5, lik.method = 'REML', ini.cov.pars = c(1,300), nugget = 0.5, message = F )
 ## summarize (this is a bit ugly, but will work)
 cov_pars <- reml_model_245$cov.pars
 nugget <- reml_model_245$nugget
@@ -147,7 +147,7 @@ end.rcode-->
 We can drop PC4
 
 <!--begin.rcode 
-reml_model_25 <- likfit(pca_geodata, trend =  ~  PC2 + PC5, lik.method = 'REML', ini.cov.pars = c(1,300), nugget = 0.5 )
+reml_model_25 <- likfit(pca_geodata, trend =  ~  PC2 + PC5, lik.method = 'REML', ini.cov.pars = c(1,300), nugget = 0.5, message = F )
 ## summarize (this is a bit ugly, but will work)
 cov_pars <- reml_model_25$cov.pars
 nugget <- reml_model_25$nugget
@@ -170,7 +170,7 @@ end.rcode-->
 and even PC5.
 
 <!--begin.rcode
-reml_model_2 <- likfit(pca_geodata, trend =  ~  PC2, lik.method = 'REML', ini.cov.pars = c(1,300), nugget = 0.5 )
+reml_model_2 <- likfit(pca_geodata, trend =  ~  PC2, lik.method = 'REML', ini.cov.pars = c(1,300), nugget = 0.5, messages = F)
 ## summarize (this is a bit ugly, but will work)
 cov_pars <- reml_model_2$cov.pars
 nugget <- reml_model_2$nugget
@@ -193,7 +193,7 @@ end.rcode-->
 Looking at the variogram
 Clearly, haven taken the spatial correlation into account, we can remove PC1, PC4 or PC5 from the 4 predictor model. We will look at the variogram fit to make sure it is reasonable:
 
-<!--begin.rcode
+<!--begin.rcode md-variogram-final
 ## look at the variogram fit
 reml_variogram_2 <- variog(pca_geodata, data = apply(reml_model_2$model.components[,2:3],1,sum),uvec = 20, max.dist = 2000)
 plot(reml_variogram_2)
@@ -231,10 +231,12 @@ end.rcode-->
 
 We can look at the results.
 
-<!--begin.rcode
+<!--begin.rcode md-eblup-plot
 ## to plot nicely use the raster package
 ## the e-blup
 plot(raster(elevation_eblup, layer = 1), main = 'E-BLUP of elevation')
+end.rcode-->
+<!--begin.rcode md-pev-plot
 ## and prediction error variance
 plot(raster(elevation_eblup, layer = 2), main = 'E-BLUP error variance')
 end.rcode-->

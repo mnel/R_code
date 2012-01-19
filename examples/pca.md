@@ -220,21 +220,7 @@ From this plot it looks as if an initial guess of phi = 300, nugget = 0.5, sigma
 ```r
 reml_model <- likfit(pca_geodata, trend = ~PC1 + 
     PC2 + PC4 + PC5, lik.method = "REML", ini.cov.pars = c(1, 
-    300), nugget = 0.5)
-```
-```
-## ---------------------------------------------------------------
-## likfit: likelihood maximisation using the function optim.
-## likfit: Use control() to pass additional
-##          arguments for the maximisation function.
-##         For further details see documentation for optim.
-## likfit: It is highly advisable to run this function several
-##         times with different initial values for the parameters.
-## likfit: WARNING: This step can be time demanding!
-## ---------------------------------------------------------------
-## likfit: end of numerical maximisation.
-```
-```r
+    300), nugget = 0.5, message = F)
 ## summarize (this is a bit ugly, but will work)
 cov_pars <- reml_model$cov.pars
 nugget <- reml_model$nugget
@@ -298,21 +284,7 @@ If we drop PC1
 ```r
 reml_model_245 <- likfit(pca_geodata, trend = ~PC2 + 
     PC4 + PC5, lik.method = "REML", ini.cov.pars = c(1, 300), 
-    nugget = 0.5)
-```
-```
-## ---------------------------------------------------------------
-## likfit: likelihood maximisation using the function optim.
-## likfit: Use control() to pass additional
-##          arguments for the maximisation function.
-##         For further details see documentation for optim.
-## likfit: It is highly advisable to run this function several
-##         times with different initial values for the parameters.
-## likfit: WARNING: This step can be time demanding!
-## ---------------------------------------------------------------
-## likfit: end of numerical maximisation.
-```
-```r
+    nugget = 0.5, message = F)
 ## summarize (this is a bit ugly, but will work)
 cov_pars <- reml_model_245$cov.pars
 nugget <- reml_model_245$nugget
@@ -356,21 +328,8 @@ We can drop PC4
 
 ```r
 reml_model_25 <- likfit(pca_geodata, trend = ~PC2 + 
-    PC5, lik.method = "REML", ini.cov.pars = c(1, 300), nugget = 0.5)
-```
-```
-## ---------------------------------------------------------------
-## likfit: likelihood maximisation using the function optim.
-## likfit: Use control() to pass additional
-##          arguments for the maximisation function.
-##         For further details see documentation for optim.
-## likfit: It is highly advisable to run this function several
-##         times with different initial values for the parameters.
-## likfit: WARNING: This step can be time demanding!
-## ---------------------------------------------------------------
-## likfit: end of numerical maximisation.
-```
-```r
+    PC5, lik.method = "REML", ini.cov.pars = c(1, 300), nugget = 0.5, 
+    message = F)
 ## summarize (this is a bit ugly, but will work)
 cov_pars <- reml_model_25$cov.pars
 nugget <- reml_model_25$nugget
@@ -414,21 +373,8 @@ and even PC5.
 
 ```r
 reml_model_2 <- likfit(pca_geodata, trend = ~PC2, 
-    lik.method = "REML", ini.cov.pars = c(1, 300), nugget = 0.5)
-```
-```
-## ---------------------------------------------------------------
-## likfit: likelihood maximisation using the function optim.
-## likfit: Use control() to pass additional
-##          arguments for the maximisation function.
-##         For further details see documentation for optim.
-## likfit: It is highly advisable to run this function several
-##         times with different initial values for the parameters.
-## likfit: WARNING: This step can be time demanding!
-## ---------------------------------------------------------------
-## likfit: end of numerical maximisation.
-```
-```r
+    lik.method = "REML", ini.cov.pars = c(1, 300), nugget = 0.5, 
+    messages = F)
 ## summarize (this is a bit ugly, but will work)
 cov_pars <- reml_model_2$cov.pars
 nugget <- reml_model_2$nugget
@@ -482,7 +428,7 @@ reml_variogram_2 <- variog(pca_geodata, data = apply(reml_model_2$model.componen
 plot(reml_variogram_2)
 lines(reml_model_2)
 ```
-![plot of chunk unnamed-chunk-13](https://github.com/mnel/R_code/raw/masterexamples/unnamed-chunk-13.png)
+![plot of chunk md-variogram-final](https://github.com/mnel/R_code/raw/masterexamples/md-variogram-final.png)
 
 
 To make the predictions we need the prediction grid, with the appropriately scaled x and y coordinates
@@ -534,11 +480,13 @@ We can look at the results.
 ## the e-blup
 plot(raster(elevation_eblup, layer = 1), main = "E-BLUP of elevation")
 ```
-![plot of chunk unnamed-chunk-16](https://github.com/mnel/R_code/raw/masterexamples/unnamed-chunk-161.png)```r
+![plot of chunk md-eblup-plot](https://github.com/mnel/R_code/raw/masterexamples/md-eblup-plot.png)
+
+```r
 ## and prediction error variance
 plot(raster(elevation_eblup, layer = 2), main = "E-BLUP error variance")
 ```
-![plot of chunk unnamed-chunk-16](https://github.com/mnel/R_code/raw/masterexamples/unnamed-chunk-162.png)
+![plot of chunk md-pev-plot](https://github.com/mnel/R_code/raw/masterexamples/md-pev-plot.png)
 
 
 The raster package also makes it very easy to save in .IMG format that can be opened by ARC-GIS
