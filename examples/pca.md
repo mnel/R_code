@@ -494,4 +494,6 @@ writeRaster(raster(elevation_eblup, layer = 2),
 
 
 
+([click to view the R code](https://github.com/mnel/R_code/raw/master/examples/pca_knit_.R))
+
 
