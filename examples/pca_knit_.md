@@ -86,7 +86,7 @@ We now move to fitting the spatial model
 ## convert to geodata
 pca_geodata <- as.geodata(meuse_pca, coord.cols= 1:2, data.col=3, covar.col=4:9)
 ## look at initial variogram
-initial_variogram <- variog(pca_geodata, trend = ~ PC1 + PC2 + PC4 + PC5, uvec=20)
+initial_variogram <- variog(pca_geodata, trend = ~ PC1 + PC2 + PC4 + PC5, uvec=20, messages = F)
 plot(initial_variogram, pch = 19)
 end.rcode-->
 
@@ -233,6 +233,7 @@ We can look at the results.
 
 <!--begin.rcode md-eblup-plot
 ## to plot nicely use the raster package
+library(raster)
 ## the e-blup
 plot(raster(elevation_eblup, layer = 1), main = 'E-BLUP of elevation')
 end.rcode-->
