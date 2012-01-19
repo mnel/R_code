@@ -18,14 +18,14 @@ Now, we don't have many predictors to work with, so we will use a 2nd-order poly
 
 We begin by normalizing the `x` and `y` data to avoid numerical problems. **This is important**. 
 
-<!--begin.rcode
+<!--begin.rcode md-normalize-coordinates
 meuse$norm_x <- with(meuse, (x- min(x)) / diff(range(x)))
 meuse$norm_y <- with(meuse, (y- min(y)) / diff(range(y)))
 end.rcode-->
 
 Then we use the function `prcomp` in the `stats` package. The `stats` package is usually loaded with `R`, but we will load it just in case.
 
-<!--begin.rcode
+<!--begin.rcode md-run-pca
 library(stats)
 ## derive the princical components model 
 pr_model <- prcomp( ~ norm_x + norm_y + I(norm_x^2) + I(norm_y^2) + I(norm_x*norm_y) + dist, data =meuse)
@@ -36,11 +36,11 @@ The first two principal components account for >95% of the variation.
 
 We can look at some plots
 
-<!--begin.rcode md-pca-plot message = FALSE
+<!--begin.rcode md-pca-plot 
  plot(pr_model, main = 'Results of PCA on meuse data set')
 end.rcode-->
 
-<!--begin.rcode md-pca-bi-plot message = FALSE
+<!--begin.rcode md-pca-biplot 
  biplot(pr_model, main = 'Results of PCA on meuse data set')
 end.rcode-->
 Note that a number of the red axes are almost co-linear, suggesting that a number of the variables are correlated (eg x^2 and x.y)
@@ -48,7 +48,7 @@ Note that a number of the red axes are almost co-linear, suggesting that a numbe
 
 Next we create a dataframe with the x and y coordinates and the principal components. These components can be obtained using `predict()` without a `newdata` argument
 
-<!--begin.rcode
+<!--begin.rcode md-predict-pca
 ## create the data.frame
 meuse_pca <- data.frame(meuse[,c('x','y','elev')], predict(pr_model))
 ## look at it
@@ -57,7 +57,7 @@ end.rcode-->
 
 To fit a basic linear model linear model with all the components 
 
-<!--begin.rcode
+<!--begin.rcode md-fit-lm
 ## create the formula
 ## this is short-cut to avoid lots of typing!
 lm_formula <- as.formula(paste('elev ~', paste('PC',1:6, sep='', collapse='+')))
@@ -71,7 +71,7 @@ end.rcode -->
 
 We can perform stepwise backwards elimination to choose the optimal number of components. The function `stepAIC` in `MASS` will do this.
 
-<!--begin.rcode
+<!--begin.rcode md-stepwise
 library(MASS)
 step_model_lm <- stepAIC(lm_pc_full, trace = 0)
 ## set trace = 1 if you want to see what is happening
@@ -92,7 +92,7 @@ end.rcode-->
 
 From this plot it looks as if an initial guess of phi = 300, nugget = 0.5, sigmasq = 1 could be reasonable
 
-<!--begin.rcode 
+<!--begin.rcode md-fit-reml-spatial
 reml_model <- likfit(pca_geodata, trend =  ~ PC1 + PC2 + PC4 + PC5, lik.method = 'REML', ini.cov.pars = c(1,300), nugget = 0.5, message = F )
 ## summarize (this is a bit ugly, but will work)
 cov_pars <- reml_model$cov.pars
@@ -115,7 +115,7 @@ paste('SigmaSq = ', round(cov_pars[1],3), ', Nugget = ', round(nugget,3), ', Phi
 end.rcode-->
 Clearly, haven taken the spatial correlation into account, we can remove PC1, PC4 or PC5 from the 4 predictor model. We will look at the variogram fit to make sure it is reasonable:
 
-<!--begin.rcode
+<!--begin.rcode md-reml-variogram
 ## look at the variogram fit
 reml_variogram <- variog(pca_geodata, data = apply(reml_model$model.components[,2:3],1,sum),uvec = 20, max.dist = 2000, messages = F)
 plot(reml_variogram)
@@ -124,7 +124,7 @@ end.rcode-->
 
 If we drop PC1
 
-<!--begin.rcode 
+<!--begin.rcode md-reml-step-1
 reml_model_245 <- likfit(pca_geodata, trend =  ~  PC2 + PC4 + PC5, lik.method = 'REML', ini.cov.pars = c(1,300), nugget = 0.5, message = F )
 ## summarize (this is a bit ugly, but will work)
 cov_pars <- reml_model_245$cov.pars
@@ -146,7 +146,7 @@ paste('SigmaSq = ', round(cov_pars[1],3), ', Nugget = ', round(nugget,3), ', Phi
 end.rcode-->
 We can drop PC4
 
-<!--begin.rcode 
+<!--begin.rcode md-reml-step-2
 reml_model_25 <- likfit(pca_geodata, trend =  ~  PC2 + PC5, lik.method = 'REML', ini.cov.pars = c(1,300), nugget = 0.5, message = F )
 ## summarize (this is a bit ugly, but will work)
 cov_pars <- reml_model_25$cov.pars
@@ -169,7 +169,7 @@ end.rcode-->
 
 and even PC5.
 
-<!--begin.rcode
+<!--begin.rcode md-reml-step-3
 reml_model_2 <- likfit(pca_geodata, trend =  ~  PC2, lik.method = 'REML', ini.cov.pars = c(1,300), nugget = 0.5, messages = F)
 ## summarize (this is a bit ugly, but will work)
 cov_pars <- reml_model_2$cov.pars
@@ -202,7 +202,7 @@ end.rcode-->
 
 To make the predictions we need the prediction grid, with the appropriately scaled x and y coordinates
 
-<!--begin.rcode
+<!--begin.rcode md-load-grid
 ## load the data
 data(meuse.grid)
 ## normalize the x and y -- note we use the minima and difference in range from the sample data!
@@ -218,7 +218,7 @@ end.rcode-->
 
 We can then make a map. `gstat` is much quicker for prediction so we will use it!
 
-<!--begin.rcode
+<!--begin.rcode md-predict
 ## convert to spatial objects
 coordinates(meuse_pca) <- ~ x+y
 ## the grid is a grid!

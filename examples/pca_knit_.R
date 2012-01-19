@@ -8,34 +8,34 @@ library(ggplot2)
 ggplot(meuse,aes(x=x,y=y,size=elev)) + geom_point() + coord_equal() + scale_size('Elevation')
 
 
-## @knitr unnamed-chunk-1
+## @knitr md-normalize-coordinates
 meuse$norm_x <- with(meuse, (x- min(x)) / diff(range(x)))
 meuse$norm_y <- with(meuse, (y- min(y)) / diff(range(y)))
 
 
-## @knitr unnamed-chunk-2
+## @knitr md-run-pca
 library(stats)
 ## derive the princical components model 
 pr_model <- prcomp( ~ norm_x + norm_y + I(norm_x^2) + I(norm_y^2) + I(norm_x*norm_y) + dist, data =meuse)
 summary(pr_model)
 
 
-## @knitr unnamed-chunk-3
+## @knitr md-pca-plot 
  plot(pr_model, main = 'Results of PCA on meuse data set')
 
 
-## @knitr unnamed-chunk-4
+## @knitr md-pca-biplot 
  biplot(pr_model, main = 'Results of PCA on meuse data set')
 
 
-## @knitr unnamed-chunk-5
+## @knitr md-predict-pca
 ## create the data.frame
 meuse_pca <- data.frame(meuse[,c('x','y','elev')], predict(pr_model))
 ## look at it
 head(meuse_pca)
 
 
-## @knitr unnamed-chunk-6
+## @knitr md-fit-lm
 ## create the formula
 ## this is short-cut to avoid lots of typing!
 lm_formula <- as.formula(paste('elev ~', paste('PC',1:6, sep='', collapse='+')))
@@ -47,7 +47,7 @@ lm_pc_full <- lm(lm_formula, data = meuse_pca)
 summary(lm_pc_full)
 
 
-## @knitr unnamed-chunk-7
+## @knitr md-stepwise
 library(MASS)
 step_model_lm <- stepAIC(lm_pc_full, trace = 0)
 ## set trace = 1 if you want to see what is happening
@@ -62,7 +62,7 @@ initial_variogram <- variog(pca_geodata, trend = ~ PC1 + PC2 + PC4 + PC5, uvec=2
 plot(initial_variogram, pch = 19)
 
 
-## @knitr unnamed-chunk-8
+## @knitr md-fit-reml-spatial
 reml_model <- likfit(pca_geodata, trend =  ~ PC1 + PC2 + PC4 + PC5, lik.method = 'REML', ini.cov.pars = c(1,300), nugget = 0.5, message = F )
 ## summarize (this is a bit ugly, but will work)
 cov_pars <- reml_model$cov.pars
@@ -84,14 +84,14 @@ printCoefmat(coef_mat)
 paste('SigmaSq = ', round(cov_pars[1],3), ', Nugget = ', round(nugget,3), ', Phi = ', round(cov_pars[2],3))
 
 
-## @knitr unnamed-chunk-9
+## @knitr md-reml-variogram
 ## look at the variogram fit
 reml_variogram <- variog(pca_geodata, data = apply(reml_model$model.components[,2:3],1,sum),uvec = 20, max.dist = 2000, messages = F)
 plot(reml_variogram)
 lines(reml_model)
 
 
-## @knitr unnamed-chunk-10
+## @knitr md-reml-step-1
 reml_model_245 <- likfit(pca_geodata, trend =  ~  PC2 + PC4 + PC5, lik.method = 'REML', ini.cov.pars = c(1,300), nugget = 0.5, message = F )
 ## summarize (this is a bit ugly, but will work)
 cov_pars <- reml_model_245$cov.pars
@@ -112,7 +112,7 @@ printCoefmat(coef_mat)
 paste('SigmaSq = ', round(cov_pars[1],3), ', Nugget = ', round(nugget,3), ', Phi = ', round(cov_pars[2],3))
 
 
-## @knitr unnamed-chunk-11
+## @knitr md-reml-step-2
 reml_model_25 <- likfit(pca_geodata, trend =  ~  PC2 + PC5, lik.method = 'REML', ini.cov.pars = c(1,300), nugget = 0.5, message = F )
 ## summarize (this is a bit ugly, but will work)
 cov_pars <- reml_model_25$cov.pars
@@ -133,7 +133,7 @@ printCoefmat(coef_mat)
 paste('SigmaSq = ', round(cov_pars[1],3), ', Nugget = ', round(nugget,3), ', Phi = ', round(cov_pars[2],3))
 
 
-## @knitr unnamed-chunk-12
+## @knitr md-reml-step-3
 reml_model_2 <- likfit(pca_geodata, trend =  ~  PC2, lik.method = 'REML', ini.cov.pars = c(1,300), nugget = 0.5, messages = F)
 ## summarize (this is a bit ugly, but will work)
 cov_pars <- reml_model_2$cov.pars
@@ -161,7 +161,7 @@ plot(reml_variogram_2)
 lines(reml_model_2)
 
 
-## @knitr unnamed-chunk-13
+## @knitr md-load-grid
 ## load the data
 data(meuse.grid)
 ## normalize the x and y -- note we use the minima and difference in range from the sample data!
@@ -175,7 +175,7 @@ meuse.grid[['I(norm_x * norm_y)']] <- meuse.grid$norm_x + meuse.grid$norm_y
 pca_meuse_grid <- data.frame(meuse.grid[,c('x','y')], predict(pr_model, newdata = meuse.grid))
 
 
-## @knitr unnamed-chunk-14
+## @knitr md-predict
 ## convert to spatial objects
 coordinates(meuse_pca) <- ~ x+y
 ## the grid is a grid!
@@ -197,7 +197,7 @@ plot(raster(elevation_eblup, layer = 1), main = 'E-BLUP of elevation')
 plot(raster(elevation_eblup, layer = 2), main = 'E-BLUP error variance')
 
 
-## @knitr unnamed-chunk-15
+## @knitr unnamed-chunk-1
 ## save the e-blup
 library(rgdal)
 writeRaster(raster(elevation_eblup, layer = 1), filename = 'elev_eblup.IMG', format = 'HFA')

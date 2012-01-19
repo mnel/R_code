@@ -72,13 +72,13 @@ We can look at some plots
 ```r
 plot(pr_model, main = "Results of PCA on meuse data set")
 ```
-![plot of chunk unnamed-chunk-3](https://github.com/mnel/R_code/raw/masterexamples/unnamed-chunk-3.png)
+![plot of chunk md-pca-plot ](https://github.com/mnel/R_code/raw/masterexamples/md-pca-plot .png)
 
 
 ```r
 biplot(pr_model, main = "Results of PCA on meuse data set")
 ```
-![plot of chunk unnamed-chunk-4](https://github.com/mnel/R_code/raw/masterexamples/unnamed-chunk-4.png)
+![plot of chunk md-pca-biplot ](https://github.com/mnel/R_code/raw/masterexamples/md-pca-biplot .png)
 
 Note that a number of the red axes are almost co-linear, suggesting that a number of the variables are correlated (eg x^2 and x.y)
 
@@ -271,7 +271,7 @@ reml_variogram <- variog(pca_geodata, data = apply(reml_model$model.components[,
 plot(reml_variogram)
 lines(reml_model)
 ```
-![plot of chunk unnamed-chunk-9](https://github.com/mnel/R_code/raw/masterexamples/unnamed-chunk-9.png)
+![plot of chunk md-reml-variogram](https://github.com/mnel/R_code/raw/masterexamples/md-reml-variogram.png)
 
 
 If we drop PC1
