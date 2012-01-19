@@ -257,7 +257,7 @@ paste("SigmaSq = ", round(cov_pars[1], 3), ", Nugget = ",
 ```
 
 
-Clearly, haven taken the spatial correlation into account, we can remove PC1, PC4 or PC5 from the 4 predictor model. We will look at the variogram fit to make sure it is reasonable:
+Clearly, with the spatial correlation taken into account, we can remove PC1, PC4 or PC5 from the 4 predictor model. We will look at the variogram fit to make sure it is reasonable:
 
 ```r
 ## look at the variogram fit

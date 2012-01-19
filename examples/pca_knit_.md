@@ -113,7 +113,7 @@ printCoefmat(coef_mat)
 ## the variance components
 paste('SigmaSq = ', round(cov_pars[1],3), ', Nugget = ', round(nugget,3), ', Phi = ', round(cov_pars[2],3))
 end.rcode-->
-Clearly, haven taken the spatial correlation into account, we can remove PC1, PC4 or PC5 from the 4 predictor model. We will look at the variogram fit to make sure it is reasonable:
+Clearly, with the spatial correlation taken into account, we can remove PC1, PC4 or PC5 from the 4 predictor model. We will look at the variogram fit to make sure it is reasonable:
 
 <!--begin.rcode md-reml-variogram
 ## look at the variogram fit
