@@ -2,6 +2,7 @@
 <!--roptions dev=png,fig.width=5,fig.height=5 -->
 This is a very basic demonstration of using `R` to perform principal component analysis.
 Load some libraries and some example data. We will be using the meuse data set, trying to map the elevation.
+
 <!--begin.rcode md-data-explore
 library(gstat)
 data(meuse)
@@ -16,6 +17,7 @@ end.rcode-->
 Now, we don't have many predictors to work with, so we will use a 2nd-order polynomial trend on the coordinates, as well as the distance.  The columns we want are `x,y,elev,dist`.
 
 We begin by normalizing the `x` and `y` data to avoid numerical problems. **This is important**. 
+
 <!--begin.rcode
 meuse$norm_x <- with(meuse, (x- min(x)) / diff(range(x)))
 meuse$norm_y <- with(meuse, (y- min(y)) / diff(range(y)))
@@ -33,6 +35,7 @@ end.rcode-->
 The first two principal components account for >95% of the variation.
 
 We can look at some plots
+
 <!--begin.rcode md-pca-plot message = FALSE
  plot(pr_model, main = 'Results of PCA on meuse data set')
 end.rcode-->
@@ -44,6 +47,7 @@ Note that a number of the red axes are almost co-linear, suggesting that a numbe
 
 
 Next we create a dataframe with the x and y coordinates and the principal components. These components can be obtained using `predict()` without a `newdata` argument
+
 <!--begin.rcode
 ## create the data.frame
 meuse_pca <- data.frame(meuse[,c('x','y','elev')], predict(pr_model))
@@ -52,6 +56,7 @@ head(meuse_pca)
 end.rcode-->
 
 To fit a basic linear model linear model with all the components 
+
 <!--begin.rcode
 ## create the formula
 ## this is short-cut to avoid lots of typing!
@@ -67,8 +72,9 @@ end.rcode -->
 We can perform stepwise backwards elimination to choose the optimal number of components. The function `stepAIC` in `MASS` will do this.
 
 <!--begin.rcode
-libary(MASS)
-step_model_lm <- stepAIC(lm_pc_full)
+library(MASS)
+step_model_lm <- stepAIC(lm_pc_full, trace = 0)
+## set trace = 1 if you want to see what is happening
 summary(step_model_lm)
 end.rcode-->
 
@@ -108,6 +114,7 @@ printCoefmat(coef_mat)
 paste('SigmaSq = ', round(cov_pars[1],3), ', Nugget = ', round(nugget,3), ', Phi = ', round(cov_pars[2],3))
 end.rcode-->
 Clearly, haven taken the spatial correlation into account, we can remove PC1, PC4 or PC5 from the 4 predictor model. We will look at the variogram fit to make sure it is reasonable:
+
 <!--begin.rcode
 ## look at the variogram fit
 reml_variogram <- variog(pca_geodata, data = apply(reml_model$model.components[,2:3],1,sum),uvec = 20, max.dist = 2000)
@@ -138,6 +145,7 @@ printCoefmat(coef_mat)
 paste('SigmaSq = ', round(cov_pars[1],3), ', Nugget = ', round(nugget,3), ', Phi = ', round(cov_pars[2],3))
 end.rcode-->
 We can drop PC4
+
 <!--begin.rcode 
 reml_model_25 <- likfit(pca_geodata, trend =  ~  PC2 + PC5, lik.method = 'REML', ini.cov.pars = c(1,300), nugget = 0.5 )
 ## summarize (this is a bit ugly, but will work)
@@ -161,7 +169,7 @@ end.rcode-->
 
 and even PC5.
 
-<<!--begin.rcode
+<!--begin.rcode
 reml_model_2 <- likfit(pca_geodata, trend =  ~  PC2, lik.method = 'REML', ini.cov.pars = c(1,300), nugget = 0.5 )
 ## summarize (this is a bit ugly, but will work)
 cov_pars <- reml_model_2$cov.pars
@@ -184,6 +192,7 @@ end.rcode-->
 
 Looking at the variogram
 Clearly, haven taken the spatial correlation into account, we can remove PC1, PC4 or PC5 from the 4 predictor model. We will look at the variogram fit to make sure it is reasonable:
+
 <!--begin.rcode
 ## look at the variogram fit
 reml_variogram_2 <- variog(pca_geodata, data = apply(reml_model_2$model.components[,2:3],1,sum),uvec = 20, max.dist = 2000)
@@ -192,6 +201,7 @@ lines(reml_model_2)
 end.rcode-->
 
 To make the predictions we need the prediction grid, with the appropriately scaled x and y coordinates
+
 <!--begin.rcode
 ## load the data
 data(meuse.grid)
@@ -220,6 +230,7 @@ elevation_eblup <- krige(elev ~ PC2, meuse_pca, pca_meuse_grid, model =reml_mode
 end.rcode-->
 
 We can look at the results.
+
 <!--begin.rcode
 ## to plot nicely use the raster package
 ## the e-blup
@@ -229,6 +240,7 @@ plot(raster(elevation_eblup, layer = 2), main = 'E-BLUP error variance')
 end.rcode-->
 
 The raster package also makes it very easy to save in .IMG format that can be opened by ARC-GIS
+
 <!--begin.rcode eval = F
 ## save the e-blup
 library(rgdal)

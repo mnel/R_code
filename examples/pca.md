@@ -2,6 +2,7 @@
 
 This is a very basic demonstration of using `R` to perform principal component analysis.
 Load some libraries and some example data. We will be using the meuse data set, trying to map the elevation.
+
 ```r
 library(gstat)
 data(meuse)
@@ -37,6 +38,7 @@ ggplot(meuse, aes(x = x, y = y, size = elev)) +
 Now, we don't have many predictors to work with, so we will use a 2nd-order polynomial trend on the coordinates, as well as the distance.  The columns we want are `x,y,elev,dist`.
 
 We begin by normalizing the `x` and `y` data to avoid numerical problems. **This is important**. 
+
 ```r
 meuse$norm_x <- with(meuse, (x - min(x))/diff(range(x)))
 meuse$norm_y <- with(meuse, (y - min(y))/diff(range(y)))
@@ -66,6 +68,7 @@ summary(pr_model)
 The first two principal components account for >95% of the variation.
 
 We can look at some plots
+
 ```r
 plot(pr_model, main = "Results of PCA on meuse data set")
 ```
@@ -81,6 +84,7 @@ Note that a number of the red axes are almost co-linear, suggesting that a numbe
 
 
 Next we create a dataframe with the x and y coordinates and the principal components. These components can be obtained using `predict()` without a `newdata` argument
+
 ```r
 ## create the data.frame
 meuse_pca <- data.frame(meuse[, c("x", "y", "elev")], 
@@ -108,6 +112,7 @@ head(meuse_pca)
 
 
 To fit a basic linear model linear model with all the components 
+
 ```r
 ## create the formula
 ## this is short-cut to avoid lots of typing!
@@ -157,49 +162,9 @@ summary(lm_pc_full)
 We can perform stepwise backwards elimination to choose the optimal number of components. The function `stepAIC` in `MASS` will do this.
 
 ```r
-libary(MASS)
-```
-```
-## Error: could not find function "libary"
-```
-```r
-step_model_lm <- stepAIC(lm_pc_full)
-```
-```
-## Start:  AIC=-36.88
-## elev ~ PC1 + PC2 + PC3 + PC4 + PC5 + PC6
-## 
-##        Df Sum of Sq RSS   AIC
-## - PC6   1       0.2 112 -38.7
-## - PC3   1       1.4 113 -36.9
-## <none>              112 -36.9
-## - PC4   1       1.6 113 -36.7
-## - PC5   1       1.7 113 -36.5
-## - PC1   1       5.6 117 -31.4
-## - PC2   1      50.6 162  19.1
-## 
-## Step:  AIC=-38.66
-## elev ~ PC1 + PC2 + PC3 + PC4 + PC5
-## 
-##        Df Sum of Sq RSS   AIC
-## - PC3   1       1.4 113 -38.7
-## <none>              112 -38.7
-## - PC4   1       1.6 113 -38.5
-## - PC5   1       1.7 114 -38.3
-## - PC1   1       5.6 117 -33.1
-## - PC2   1      50.6 162  17.2
-## 
-## Step:  AIC=-38.71
-## elev ~ PC1 + PC2 + PC4 + PC5
-## 
-##        Df Sum of Sq RSS   AIC
-## <none>              113 -38.7
-## - PC4   1       1.6 115 -38.6
-## - PC5   1       1.7 115 -38.4
-## - PC1   1       5.6 119 -33.3
-## - PC2   1      50.6 164  16.6
-```
-```r
+library(MASS)
+step_model_lm <- stepAIC(lm_pc_full, trace = 0)
+## set trace = 1 if you want to see what is happening
 summary(step_model_lm)
 ```
 ```
@@ -312,6 +277,7 @@ paste("SigmaSq = ", round(cov_pars[1], 3), ", Nugget = ",
 
 
 Clearly, haven taken the spatial correlation into account, we can remove PC1, PC4 or PC5 from the 4 predictor model. We will look at the variogram fit to make sure it is reasonable:
+
 ```r
 ## look at the variogram fit
 reml_variogram <- variog(pca_geodata, data = apply(reml_model$model.components[, 
@@ -387,6 +353,7 @@ paste("SigmaSq = ", round(cov_pars[1], 3), ", Nugget = ",
 
 
 We can drop PC4
+
 ```r
 reml_model_25 <- likfit(pca_geodata, trend = ~PC2 + 
     PC5, lik.method = "REML", ini.cov.pars = c(1, 300), nugget = 0.5)
@@ -445,8 +412,23 @@ paste("SigmaSq = ", round(cov_pars[1], 3), ", Nugget = ",
 
 and even PC5.
 
-<<!--begin.rcode
-reml_model_2 <- likfit(pca_geodata, trend =  ~  PC2, lik.method = 'REML', ini.cov.pars = c(1,300), nugget = 0.5 )
+```r
+reml_model_2 <- likfit(pca_geodata, trend = ~PC2, 
+    lik.method = "REML", ini.cov.pars = c(1, 300), nugget = 0.5)
+```
+```
+## ---------------------------------------------------------------
+## likfit: likelihood maximisation using the function optim.
+## likfit: Use control() to pass additional
+##          arguments for the maximisation function.
+##         For further details see documentation for optim.
+## likfit: It is highly advisable to run this function several
+##         times with different initial values for the parameters.
+## likfit: WARNING: This step can be time demanding!
+## ---------------------------------------------------------------
+## likfit: end of numerical maximisation.
+```
+```r
 ## summarize (this is a bit ugly, but will work)
 cov_pars <- reml_model_2$cov.pars
 nugget <- reml_model_2$nugget
@@ -455,19 +437,39 @@ coefficients <- reml_model_2$beta
 ## get standard errors
 se_error <- sqrt(diag(reml_model_2$beta.var))
 ## get t values
-t_value <- coefficients / se_error
+t_value <- coefficients/se_error
 ## and probabilities
-t_prob <- 2 * pt(-abs(t_value) ,df = (nrow(meuse_pca) - 3))
+t_prob <- 2 * pt(-abs(t_value), df = (nrow(meuse_pca) - 
+    3))
 ## make pretty
-coef_mat <- cbind(coefficients,se_error,t_value,t_prob)
-colnames(coef_mat) <- c("Estimate", "Std.Err", "t value", "Pr(>|t|)") 
-rownames(coef_mat) <- c('(intercept)',paste('PC',2,sep=''))
+coef_mat <- cbind(coefficients, se_error, t_value, 
+    t_prob)
+colnames(coef_mat) <- c("Estimate", "Std.Err", 
+    "t value", "Pr(>|t|)")
+rownames(coef_mat) <- c("(intercept)", paste("PC", 
+    2, sep = ""))
 printCoefmat(coef_mat)
-paste('SigmaSq = ', round(cov_pars[1],3), ', Nugget = ', round(nugget,3), ', Phi = ', round(cov_pars[2],3))
+```
+```
+##             Estimate Std.Err t value Pr(>|t|)    
+## (intercept)    8.102   0.198   40.90  < 2e-16 ***
+## PC2           -2.425   0.534   -4.54  1.1e-05 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+```
+```r
+paste("SigmaSq = ", round(cov_pars[1], 3), ", Nugget = ", 
+    round(nugget, 3), ", Phi = ", round(cov_pars[2], 3))
+```
+```
+## [1] "SigmaSq =  0.356 , Nugget =  0.484 , Phi =  395.688"
+```
+
 
 
 Looking at the variogram
 Clearly, haven taken the spatial correlation into account, we can remove PC1, PC4 or PC5 from the 4 predictor model. We will look at the variogram fit to make sure it is reasonable:
+
 ```r
 ## look at the variogram fit
 reml_variogram_2 <- variog(pca_geodata, data = apply(reml_model_2$model.components[, 
@@ -480,10 +482,11 @@ reml_variogram_2 <- variog(pca_geodata, data = apply(reml_model_2$model.componen
 plot(reml_variogram_2)
 lines(reml_model_2)
 ```
-![plot of chunk unnamed-chunk-12](https://github.com/mnel/R_code/raw/masterexamples/unnamed-chunk-12.png)
+![plot of chunk unnamed-chunk-13](https://github.com/mnel/R_code/raw/masterexamples/unnamed-chunk-13.png)
 
 
 To make the predictions we need the prediction grid, with the appropriately scaled x and y coordinates
+
 ```r
 ## load the data
 data(meuse.grid)
@@ -525,19 +528,21 @@ elevation_eblup <- krige(elev ~ PC2, meuse_pca,
 
 
 We can look at the results.
+
 ```r
 ## to plot nicely use the raster package
 ## the e-blup
 plot(raster(elevation_eblup, layer = 1), main = "E-BLUP of elevation")
 ```
-![plot of chunk unnamed-chunk-15](https://github.com/mnel/R_code/raw/masterexamples/unnamed-chunk-151.png)```r
+![plot of chunk unnamed-chunk-16](https://github.com/mnel/R_code/raw/masterexamples/unnamed-chunk-161.png)```r
 ## and prediction error variance
 plot(raster(elevation_eblup, layer = 2), main = "E-BLUP error variance")
 ```
-![plot of chunk unnamed-chunk-15](https://github.com/mnel/R_code/raw/masterexamples/unnamed-chunk-152.png)
+![plot of chunk unnamed-chunk-16](https://github.com/mnel/R_code/raw/masterexamples/unnamed-chunk-162.png)
 
 
 The raster package also makes it very easy to save in .IMG format that can be opened by ARC-GIS
+
 ```r
 ## save the e-blup
 library(rgdal)
