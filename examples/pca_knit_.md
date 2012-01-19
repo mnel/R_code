@@ -117,7 +117,7 @@ Clearly, haven taken the spatial correlation into account, we can remove PC1, PC
 
 <!--begin.rcode
 ## look at the variogram fit
-reml_variogram <- variog(pca_geodata, data = apply(reml_model$model.components[,2:3],1,sum),uvec = 20, max.dist = 2000)
+reml_variogram <- variog(pca_geodata, data = apply(reml_model$model.components[,2:3],1,sum),uvec = 20, max.dist = 2000, messages = F)
 plot(reml_variogram)
 lines(reml_model)
 end.rcode-->
@@ -195,7 +195,7 @@ Clearly, haven taken the spatial correlation into account, we can remove PC1, PC
 
 <!--begin.rcode md-variogram-final
 ## look at the variogram fit
-reml_variogram_2 <- variog(pca_geodata, data = apply(reml_model_2$model.components[,2:3],1,sum),uvec = 20, max.dist = 2000)
+reml_variogram_2 <- variog(pca_geodata, data = apply(reml_model_2$model.components[,2:3],1,sum),uvec = 20, max.dist = 2000, messages = F)
 plot(reml_variogram_2)
 lines(reml_model_2)
 end.rcode-->
