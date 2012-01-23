@@ -1,4 +1,3 @@
-
 ## @knitr md-data-explore
 library(gstat)
 data(meuse)
@@ -74,7 +73,7 @@ se_error <- sqrt(diag(reml_model$beta.var))
 ## get t values
 t_value <- coefficients / se_error
 ## and probabilities
-t_prob <- 2 * pt(-abs(t_value) ,df = (nrow(meuse_pca) - 6))
+t_prob <- 2 * pt(-abs(t_value) ,df = (nrow(meuse_pca) - length(coefficients))
 ## make pretty
 coef_mat <- cbind(coefficients,se_error,t_value,t_prob)
 colnames(coef_mat) <- c("Estimate", "Std.Err", "t value", "Pr(>|t|)") 
@@ -103,7 +102,7 @@ se_error <- sqrt(diag(reml_model_245$beta.var))
 ## get t values
 t_value <- coefficients / se_error
 ## and probabilities
-t_prob <- 2 * pt(-abs(t_value) ,df = (nrow(meuse_pca) - 5))
+t_prob <- 2 * pt(-abs(t_value) ,df = (nrow(meuse_pca) - length(coefficients))
 ## make pretty
 coef_mat <- cbind(coefficients,se_error,t_value,t_prob)
 colnames(coef_mat) <- c("Estimate", "Std.Err", "t value", "Pr(>|t|)") 
@@ -124,7 +123,7 @@ se_error <- sqrt(diag(reml_model_25$beta.var))
 ## get t values
 t_value <- coefficients / se_error
 ## and probabilities
-t_prob <- 2 * pt(-abs(t_value) ,df = (nrow(meuse_pca) - 4))
+t_prob <- 2 * pt(-abs(t_value) ,df = (nrow(meuse_pca) - length(coefficients))
 ## make pretty
 coef_mat <- cbind(coefficients,se_error,t_value,t_prob)
 colnames(coef_mat) <- c("Estimate", "Std.Err", "t value", "Pr(>|t|)") 
@@ -145,7 +144,7 @@ se_error <- sqrt(diag(reml_model_2$beta.var))
 ## get t values
 t_value <- coefficients / se_error
 ## and probabilities
-t_prob <- 2 * pt(-abs(t_value) ,df = (nrow(meuse_pca) - 3))
+t_prob <- 2 * pt(-abs(t_value) ,df = (nrow(meuse_pca) - length(coefficients))
 ## make pretty
 coef_mat <- cbind(coefficients,se_error,t_value,t_prob)
 colnames(coef_mat) <- c("Estimate", "Std.Err", "t value", "Pr(>|t|)") 
