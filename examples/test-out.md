@@ -18,7 +18,7 @@ rnorm(5)
 
 
 ```
-## [1] -2.2618 -0.8726  0.3695  1.6229 -0.8568
+## [1] -0.1081 -1.1991 -1.3715 -0.8268 -1.1809
 ```
 
 
@@ -48,5 +48,5 @@ sqrt(-1)
 ggplot(mpg) + geom_point(aes(cty, hwy, colour = manufacturer))
 ```
 
-![plot of chunk plot-one](plot-one.png) 
+![plot of chunk plot-one](http://i.imgur.com/KgU7v.png) 
 
